@@ -38,4 +38,7 @@ public class User extends BaseEntity {
 
     @Column(name = "TYPE")
     private Integer type;
+
+    @Column(name = "EMAIL")
+    private String email;
 }
