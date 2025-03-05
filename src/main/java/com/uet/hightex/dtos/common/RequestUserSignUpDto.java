@@ -16,4 +16,10 @@ public class RequestUserSignUpDto {
 
     @Schema(description = "Password")
     private String password;
+
+    @Schema(description = "Email")
+    private String email;
+
+    @Schema(description = "OTP")
+    private String otp;
 }
