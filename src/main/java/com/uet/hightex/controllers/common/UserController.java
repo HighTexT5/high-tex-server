@@ -1,7 +1,6 @@
 package com.uet.hightex.controllers.common;
 
 import com.uet.hightex.dtos.base.BaseResponse;
-import com.uet.hightex.dtos.base.ResponsePage;
 import com.uet.hightex.dtos.common.RequestUserSignUpDto;
 import com.uet.hightex.enums.AppConstant;
 import com.uet.hightex.services.common.UserService;
@@ -25,7 +24,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public BaseResponse<String> signup(@RequestBody RequestUserSignUpDto requestUserSignUpDto) {
-        return switch (userService.signup(requestUserSignUpDto)) {
+        return switch (userService.signUp(requestUserSignUpDto)) {
             case 0 -> new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", "Sign up successfully");
             case 1 ->
                     new BaseResponse<>(AppConstant.REQUEST_ERROR_SIGN_UP.getValue(), "Error", "Username is already exist");

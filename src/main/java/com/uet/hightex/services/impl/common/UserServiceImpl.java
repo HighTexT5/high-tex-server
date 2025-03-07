@@ -2,6 +2,7 @@ package com.uet.hightex.services.impl.common;
 
 import com.uet.hightex.dtos.common.RequestUserSignUpDto;
 import com.uet.hightex.entities.common.User;
+import com.uet.hightex.enums.common.UserLockStatus;
 import com.uet.hightex.enums.common.UserType;
 import com.uet.hightex.repositories.common.UserRepository;
 import com.uet.hightex.services.common.OtpService;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int signup(RequestUserSignUpDto requestUserSignUpDto) {
+    public int signUp(RequestUserSignUpDto requestUserSignUpDto) {
         String username = requestUserSignUpDto.getUsername();
         String password = requestUserSignUpDto.getPassword();
         String email = requestUserSignUpDto.getEmail();

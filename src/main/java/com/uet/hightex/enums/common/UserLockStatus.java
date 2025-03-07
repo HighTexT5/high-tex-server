@@ -1,4 +1,4 @@
-package com.uet.hightex.services.impl.common;
+package com.uet.hightex.enums.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
