@@ -65,13 +65,13 @@ public class OtpService {
     }
 
     private String validateEmail(String email) {
-        if (userRepository.findByEmail(email) != null) {
+        if (userRepository.findByEmail(email).isPresent()) {
             return "Email already exists";
         }
         return null;
     }
 
     private boolean isUsernameExist(String username) {
-        return userRepository.findByUsername(username) != null;
+        return userRepository.findByUsername(username).isPresent();
     }
 }
