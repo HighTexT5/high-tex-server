@@ -1,13 +1,21 @@
 package com.uet.hightex.services.impl.common;
 
+import com.uet.hightex.dtos.common.RequestUserSignInDto;
 import com.uet.hightex.dtos.common.RequestUserSignUpDto;
 import com.uet.hightex.entities.common.User;
+import com.uet.hightex.enums.common.UserLockStatus;
 import com.uet.hightex.enums.common.UserType;
+import com.uet.hightex.objects.CustomAuthenticationToken;
 import com.uet.hightex.repositories.common.UserRepository;
 import com.uet.hightex.services.common.OtpService;
 import com.uet.hightex.services.common.UserService;
+import com.uet.hightex.services.support.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,15 +23,23 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final OtpService otpService;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, OtpService otpService) {
+    public UserServiceImpl(
+            UserRepository userRepository,
+            OtpService otpService,
+            JwtService jwtService,
+            @Lazy AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.otpService = otpService;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
-    public int signup(RequestUserSignUpDto requestUserSignUpDto) {
+    public int signUp(RequestUserSignUpDto requestUserSignUpDto) {
         String username = requestUserSignUpDto.getUsername();
         String password = requestUserSignUpDto.getPassword();
         String email = requestUserSignUpDto.getEmail();
@@ -44,6 +60,27 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return 0;
+    }
+
+    @Override
+    public String signIn(RequestUserSignInDto requestUserSignInDto) {
+        String username = requestUserSignInDto.getUsername();
+        String password = requestUserSignInDto.getPassword();
+        long timestamp = requestUserSignInDto.getTimestamp();
+
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(new CustomAuthenticationToken(username, password, timestamp));
+        } catch (Exception e) {
+            log.error("Sign in failed", e);
+            throw new UsernameNotFoundException("Sign in failed");
+        }
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(username);
+        } else {
+            log.error("Sign in failed");
+            throw new UsernameNotFoundException("Sign in failed");
+        }
     }
 
     private boolean verifyOtp(String email, String otp, String username) {
