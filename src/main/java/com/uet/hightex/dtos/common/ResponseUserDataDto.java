@@ -14,9 +14,6 @@ public class ResponseUserDataDto {
     @Schema(description = "Full name")
     private String fullName;
 
-    @Schema(description = "User code")
-    private String userCode;
-
     @Schema(description = "Gender")
     private Integer gender;
 
