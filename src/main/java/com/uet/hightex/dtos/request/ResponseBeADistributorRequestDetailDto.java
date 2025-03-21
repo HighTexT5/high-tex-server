@@ -1,5 +1,6 @@
 package com.uet.hightex.dtos.request;
 
+import com.uet.hightex.dtos.base.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,9 +11,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestBeADistributorDto {
-    @Schema(description = "Manager name")
-    private String managerName;
+public class ResponseBeADistributorRequestDetailDto extends BaseDto {
+    @Schema(description = "User full name")
+    private String fullName;
+
+    @Schema(description = "User code")
+    private String userCode;
 
     @Schema(description = "Shop name")
     private String shopName;
@@ -31,4 +35,7 @@ public class RequestBeADistributorDto {
 
     @Schema(description = "Description")
     private String description;
+
+    @Schema(description = "Status")
+    private String status;
 }
