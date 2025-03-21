@@ -27,11 +27,10 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createUserData(String userCode, String fullName, String email) {
+    public void createUserData(String userCode, String fullName) {
         UserData userData = new UserData();
         userData.setUserCode(userCode);
         userData.setFullName(fullName);
-        userData.setEmail(email);
         userData.setRole(UserType.USER.getValue());
         userData.setRegion(this.getRegion());
 
@@ -48,7 +47,6 @@ public class UserDataServiceImpl implements UserDataService {
         }
 
         ResponseUserDataDto responseUserDataDto = new ResponseUserDataDto();
-        responseUserDataDto.setUserCode(userData.getUserCode());
         responseUserDataDto.setFullName(userData.getFullName());
         responseUserDataDto.setGender(userData.getGender());
         responseUserDataDto.setBirthday(DateUtils.formatDate(userData.getBirthday()));

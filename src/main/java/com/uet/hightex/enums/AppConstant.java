@@ -15,9 +15,7 @@ public enum AppConstant {
     REQUEST_ERROR_SIGN_IN(402, "authentication", "Request error sign in when username or password is not correct"),
 
     REQUEST_GET_USER_DATA_FAIL(403, "user", "Request get user data fail"),
-    REQUEST_UPDATE_USER_DATA_FAIL(404, "user", "Request update user data fail"),
-
-    REQUEST_ERROR(500, "common", "Request error");
+    REQUEST_UPDATE_USER_DATA_FAIL(404, "user", "Request update user data fail"),;
 
     private final int value;
     private final String group;

@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestBeADistributorDto {
-    @Schema(description = "Manager name")
-    private String managerName;
+    @Schema(description = "User code")
+    private String userCode;
 
     @Schema(description = "Shop name")
     private String shopName;
