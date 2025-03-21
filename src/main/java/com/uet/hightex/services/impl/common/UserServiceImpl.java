@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("Sign in failed");
         }
         if (authentication.isAuthenticated()) {
-            return Objects.requireNonNull(UserType.fromValue(user.getType())).getCode() + jwtService.generateToken(username);
+            return Objects.requireNonNull(UserType.fromValue(user.getType())).getCode() + " " + jwtService.generateToken(username);
         } else {
             log.error("Sign in failed");
             throw new UsernameNotFoundException("Sign in failed");
