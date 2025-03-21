@@ -4,7 +4,7 @@ import com.uet.hightex.dtos.common.RequestUpdateUserDataDto;
 import com.uet.hightex.dtos.common.ResponseUserDataDto;
 
 public interface UserDataService {
-    void createUserData(String userCode, String fullName);
+    void createUserData(String userCode, String fullName, String email);
 
     ResponseUserDataDto getUserData(String userCode);
 
