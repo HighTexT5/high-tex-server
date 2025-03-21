@@ -24,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        userDataService.createUserData(user.getCode(), username);
+        userDataService.createUserData(user.getCode(), username, email);
 
         return 0;
     }
@@ -82,6 +83,8 @@ public class UserServiceImpl implements UserService {
         String password = requestUserSignInDto.getPassword();
         long timestamp = requestUserSignInDto.getTimestamp();
 
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(new CustomAuthenticationToken(username, password, timestamp));
@@ -90,7 +93,7 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("Sign in failed");
         }
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(username);
+            return Objects.requireNonNull(UserType.fromValue(user.getType())).getCode() + jwtService.generateToken(username);
         } else {
             log.error("Sign in failed");
             throw new UsernameNotFoundException("Sign in failed");

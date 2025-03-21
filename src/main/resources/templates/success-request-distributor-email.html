@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thông báo tạo shop thành công</title>
+</head>
+<body>
+<h2>Chúc mừng bạn đã tạo shop thành công!</h2>
+<p>Xin chào <strong th:text="${fullName}"></strong>,</p>
+<p>Shop của bạn <strong th:text="${shopName}"></strong> đã được tạo thành công.</p>
+<br />
+<p>Người xử lý yêu cầu của bạn: <strong th:text="${managerName}"></strong></p>
+<p>Ý kiến: <strong th:text="${opinion}"></strong></p>
+<p>Chi tiết: <strong th:text="${detail}"></strong></p>
+<p>Trân trọng,</p>
+<p>Đội ngũ hỗ trợ.</p>
+</body>
+</html>
