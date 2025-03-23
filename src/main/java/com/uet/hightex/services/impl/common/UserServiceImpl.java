@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
     public String signIn(RequestUserSignInDto requestUserSignInDto) {
         String username = requestUserSignInDto.getUsername();
         String password = requestUserSignInDto.getPassword();
-        long timestamp = requestUserSignInDto.getTimestamp();
+        String timestamp = requestUserSignInDto.getTimestamp();
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 

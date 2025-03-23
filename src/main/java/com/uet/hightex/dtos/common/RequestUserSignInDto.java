@@ -18,5 +18,5 @@ public class RequestUserSignInDto {
     private String password;
 
     @Schema(description = "Timestamp")
-    private long timestamp;
+    private String timestamp;
 }

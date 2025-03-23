@@ -10,16 +10,16 @@ import java.util.Collection;
 public class CustomAuthenticationToken extends UsernamePasswordAuthenticationToken {
 
     private final String hashPassword;
-    private final long timestamp;
+    private final String timestamp;
 
-    public CustomAuthenticationToken(String username, String hashPassword, long timestamp) {
+    public CustomAuthenticationToken(String username, String hashPassword, String timestamp) {
         super(username, null);
         this.hashPassword = hashPassword;
         this.timestamp = timestamp;
     }
 
     // Constructor cho trường hợp đã xác thực
-    public CustomAuthenticationToken(String username, String hashPassword, long timestamp, Collection<? extends GrantedAuthority> authorities) {
+    public CustomAuthenticationToken(String username, String hashPassword, String timestamp, Collection<? extends GrantedAuthority> authorities) {
         super(username, null, authorities); // Truyền authorities vào constructor
         this.hashPassword = hashPassword;
         this.timestamp = timestamp;

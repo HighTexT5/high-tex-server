@@ -33,7 +33,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         CustomAuthenticationToken authToken = (CustomAuthenticationToken) authentication;
         String username = authToken.getName();
         String hashPassword = authToken.getHashPassword();
-        long timestamp = authToken.getTimestamp();
+        String timestamp = authToken.getTimestamp();
 
 //        if (Math.abs(Instant.now().getEpochSecond() - timestamp) > 180) { // 180 giây = 3 phút
 //            throw new BadCredentialsException("Timestamp is invalid or expired");
