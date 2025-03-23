@@ -3,6 +3,7 @@ package com.uet.hightex.controllers.common;
 import com.uet.hightex.dtos.base.BaseResponse;
 import com.uet.hightex.dtos.common.RequestUserSignInDto;
 import com.uet.hightex.dtos.common.RequestUserSignUpDto;
+import com.uet.hightex.dtos.common.ResponseUserSignInDto;
 import com.uet.hightex.enums.AppConstant;
 import com.uet.hightex.services.common.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +37,13 @@ public class UserController {
     }
 
     @PostMapping("/sign-in")
-    public BaseResponse<String> signIn(@RequestBody RequestUserSignInDto requestUserSignInDto) {
+    public BaseResponse<ResponseUserSignInDto> signIn(@RequestBody RequestUserSignInDto requestUserSignInDto) {
         try {
             return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", userService.signIn(requestUserSignInDto));
         } catch (UsernameNotFoundException e) {
-            return new BaseResponse<>(AppConstant.REQUEST_ERROR_SIGN_IN.getValue(), "Error", "Username or password is not correct");
+            return new BaseResponse<>(AppConstant.REQUEST_ERROR_SIGN_IN.getValue(), e.getMessage(), null);
         } catch (Exception e) {
-            return new BaseResponse<>(500, "Error", "Internal server error");
+            return new BaseResponse<>(500, "Internal server error", null);
         }
     }
 }
