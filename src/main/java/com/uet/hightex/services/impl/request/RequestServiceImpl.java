@@ -13,6 +13,7 @@ import com.uet.hightex.enums.common.UserType;
 import com.uet.hightex.repositories.common.UserDataRepository;
 import com.uet.hightex.repositories.common.UserRepository;
 import com.uet.hightex.repositories.manager.BeDistributorRequestRepository;
+import com.uet.hightex.services.common.ShopService;
 import com.uet.hightex.services.request.RequestService;
 import com.uet.hightex.services.support.EmailService;
 import com.uet.hightex.utils.DateUtils;
@@ -33,16 +34,19 @@ public class RequestServiceImpl implements RequestService {
     private final UserDataRepository userDataRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final ShopService shopService;
 
     @Autowired
     public RequestServiceImpl(BeDistributorRequestRepository beDistributorRequestRepository,
                               UserDataRepository userDataRepository,
                               UserRepository userRepository,
-                              EmailService emailService) {
+                              EmailService emailService,
+                              ShopService shopService) {
         this.beDistributorRequestRepository = beDistributorRequestRepository;
         this.userDataRepository = userDataRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.shopService = shopService;
     }
 
     @Override
@@ -149,6 +153,8 @@ public class RequestServiceImpl implements RequestService {
         User user = userRepository.findByCode(request.getUserCode()).orElseThrow(() -> new RuntimeException("User authentication not found"));
         user.setType(UserType.DISTRIBUTOR.getValue());
         userRepository.save(user);
+
+        shopService.createShop(request);
 
         if (request.getStatus().equals(RequestStatus.APPROVED.getValue())) {
             String subject = "HighTEx Request Approved";
