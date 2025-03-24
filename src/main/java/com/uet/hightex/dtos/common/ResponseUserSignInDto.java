@@ -10,13 +10,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestUserSignInDto {
+public class ResponseUserSignInDto {
     @Schema(description = "Username")
     private String username;
 
-    @Schema(description = "Password")
-    private String password;
+    @Schema(description = "Token")
+    private String token;
 
-    @Schema(description = "Timestamp")
-    private String timestamp;
+    @Schema(description = "Role")
+    private String role;
 }

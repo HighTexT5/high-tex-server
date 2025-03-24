@@ -2,6 +2,7 @@ package com.uet.hightex.services.impl.common;
 
 import com.uet.hightex.dtos.common.RequestUserSignInDto;
 import com.uet.hightex.dtos.common.RequestUserSignUpDto;
+import com.uet.hightex.dtos.common.ResponseUserSignInDto;
 import com.uet.hightex.entities.common.User;
 import com.uet.hightex.enums.common.UserLockStatus;
 import com.uet.hightex.enums.common.UserType;
@@ -78,10 +79,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true, rollbackFor = Exception.class)
-    public String signIn(RequestUserSignInDto requestUserSignInDto) {
+    public ResponseUserSignInDto signIn(RequestUserSignInDto requestUserSignInDto) {
         String username = requestUserSignInDto.getUsername();
         String password = requestUserSignInDto.getPassword();
-        long timestamp = requestUserSignInDto.getTimestamp();
+        String timestamp = requestUserSignInDto.getTimestamp();
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -93,7 +94,7 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("Sign in failed");
         }
         if (authentication.isAuthenticated()) {
-            return Objects.requireNonNull(UserType.fromValue(user.getType())).getCode() + " " + jwtService.generateToken(username);
+            return new ResponseUserSignInDto(username, jwtService.generateToken(username), Objects.requireNonNull(UserType.fromValue(user.getType())).getCode());
         } else {
             log.error("Sign in failed");
             throw new UsernameNotFoundException("Sign in failed");
