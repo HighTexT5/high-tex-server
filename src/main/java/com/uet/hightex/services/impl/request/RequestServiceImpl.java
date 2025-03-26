@@ -1,22 +1,28 @@
 package com.uet.hightex.services.impl.request;
 
-import com.uet.hightex.dtos.request.RequestBeADistributorDto;
-import com.uet.hightex.dtos.request.RequestSendOpinionOfManagerDto;
-import com.uet.hightex.dtos.request.ResponseBeADistributorRequestDetailDto;
-import com.uet.hightex.dtos.request.ResponseBeADistributorRequestDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uet.hightex.dtos.request.*;
+import com.uet.hightex.dtos.request.items.SmartphoneRequest;
+import com.uet.hightex.entities.common.Shop;
 import com.uet.hightex.entities.common.User;
 import com.uet.hightex.entities.common.UserData;
+import com.uet.hightex.entities.items.SmartphoneInfoRequest;
+import com.uet.hightex.entities.manager.ActiveItemRequest;
 import com.uet.hightex.entities.manager.BeDistributorRequest;
 import com.uet.hightex.enums.common.RequestStatus;
 import com.uet.hightex.enums.common.UserLockStatus;
 import com.uet.hightex.enums.common.UserType;
+import com.uet.hightex.repositories.common.ShopRepository;
 import com.uet.hightex.repositories.common.UserDataRepository;
 import com.uet.hightex.repositories.common.UserRepository;
+import com.uet.hightex.repositories.items.SmartphoneInfoRequestRepository;
+import com.uet.hightex.repositories.manager.ActiveItemRequestRepository;
 import com.uet.hightex.repositories.manager.BeDistributorRequestRepository;
 import com.uet.hightex.services.common.ShopService;
 import com.uet.hightex.services.request.RequestService;
 import com.uet.hightex.services.support.EmailService;
 import com.uet.hightex.utils.DateUtils;
+import com.uet.hightex.utils.MapperUtils;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,22 +37,33 @@ import java.util.Objects;
 @Slf4j
 public class RequestServiceImpl implements RequestService {
     private final BeDistributorRequestRepository beDistributorRequestRepository;
+    private final ActiveItemRequestRepository activeItemRequestRepository;
+    private final SmartphoneInfoRequestRepository smartphoneInfoRequestRepository;
     private final UserDataRepository userDataRepository;
     private final UserRepository userRepository;
+    private final ShopRepository shopRepository;
+
     private final EmailService emailService;
     private final ShopService shopService;
+
 
     @Autowired
     public RequestServiceImpl(BeDistributorRequestRepository beDistributorRequestRepository,
                               UserDataRepository userDataRepository,
                               UserRepository userRepository,
                               EmailService emailService,
-                              ShopService shopService) {
+                              ShopService shopService,
+                              ShopRepository shopRepository,
+                              ActiveItemRequestRepository activeItemRequestRepository,
+                              SmartphoneInfoRequestRepository smartphoneInfoRequestRepository) {
         this.beDistributorRequestRepository = beDistributorRequestRepository;
         this.userDataRepository = userDataRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.shopService = shopService;
+        this.shopRepository = shopRepository;
+        this.activeItemRequestRepository = activeItemRequestRepository;
+        this.smartphoneInfoRequestRepository = smartphoneInfoRequestRepository;
     }
 
     @Override
@@ -69,7 +86,6 @@ public class RequestServiceImpl implements RequestService {
         UserData userData = userDataRepository.findByUserCode(request.getUserCode())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        assert requestBeADistributorDto.getManagerName() != null;
         UserData manager = userDataRepository.findByFullName(requestBeADistributorDto.getManagerName(), UserType.ADMIN.getValue(), UserLockStatus.UNLOCKED.getValue()).orElse(null);
         if (manager == null) {
             List<UserData> admin = userDataRepository.findRoleAdministratorByRegion(userData.getRegion(), UserType.ADMIN.getValue(), UserLockStatus.UNLOCKED.getValue());
@@ -96,6 +112,7 @@ public class RequestServiceImpl implements RequestService {
             response.setRequestId(r.getId());
             response.setUserCode(r.getUserCode());
             response.setShopName(r.getShopName());
+            response.setStatus(Objects.requireNonNull(RequestStatus.fromValue(r.getStatus())).getDescription());
             UserData userData = userDataRepository.findByUserCode(r.getUserCode()).orElseThrow(() -> new RuntimeException("User not found"));
             response.setFullName(userData.getFullName());
             return response;
@@ -199,6 +216,11 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    public void opinionFromManagerOnItem(String managerCode, RequestSendOpinionOfManagerDto requestSendOpinionOfManagerDto) {
+
+    }
+
+    @Override
     public List<ResponseBeADistributorRequestDto> getUserBeADistributorRequest(String userCode) {
         List<BeDistributorRequest> request = beDistributorRequestRepository.findByUserCode(userCode);
         return request.stream().map(r -> {
@@ -208,6 +230,78 @@ public class RequestServiceImpl implements RequestService {
             response.setUserCode(r.getUserCode());
             response.setShopName(r.getShopName());
             response.setStatus(Objects.requireNonNull(RequestStatus.fromValue(r.getStatus())).getDescription());
+            return response;
+        }).toList();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void newActiveItemRequest(String userCode, RequestActiveAnItemDto requestActiveAnItemDto) {
+        UserData userData = userDataRepository.findByUserCode(userCode).orElseThrow(() -> new RuntimeException("User not found"));
+        Shop shop = shopRepository.findByOwnerCode(userCode).orElseThrow(() -> new RuntimeException("Shop not found"));
+
+        ActiveItemRequest request = new ActiveItemRequest();
+        request.setUserCode(userCode);
+        request.setShopCode(shop.getShopCode());
+
+        UserData manager = userDataRepository.findByFullName(requestActiveAnItemDto.getManagerName(), UserType.ADMIN.getValue(), UserLockStatus.UNLOCKED.getValue()).orElse(null);
+        if (manager == null) {
+            List<UserData> admin = userDataRepository.findRoleAdministratorByRegion(userData.getRegion(), UserType.ADMIN.getValue(), UserLockStatus.UNLOCKED.getValue());
+            if (admin.isEmpty()) {
+                log.error("No admin found");
+                throw new RuntimeException("No admin found");
+            }
+
+            request.setManagerCode(admin.get(0).getUserCode());
+        } else {
+            request.setManagerCode(manager.getUserCode());
+        }
+
+        request.setRegion(userData.getRegion());
+        request.setItemName(requestActiveAnItemDto.getItemName());
+        request.setCategory(requestActiveAnItemDto.getCategory());
+        request.setPrice(requestActiveAnItemDto.getPrice());
+        request.setQuantity(requestActiveAnItemDto.getQuantity());
+        request.setDescription(requestActiveAnItemDto.getDescription());
+        request.setStatus(RequestStatus.PENDING.getValue());
+        request.setBrand(requestActiveAnItemDto.getBrand());
+        request.setProductSource(requestActiveAnItemDto.getProductSource());
+        request.setItemDetailId(this.saveInfoData(requestActiveAnItemDto.getCategory(), requestActiveAnItemDto.getDetail()));
+
+        activeItemRequestRepository.save(request);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    private long saveInfoData(String category, Object object) {
+        switch (category) {
+            case "SMARTPHONE":
+            case "smartphone":
+            {
+                ObjectMapper objectMapper = new ObjectMapper();
+                SmartphoneRequest smartphoneRequest = objectMapper.convertValue(object, SmartphoneRequest.class);
+                SmartphoneInfoRequest smartphoneInfoRequest = new SmartphoneInfoRequest();
+                MapperUtils.map(smartphoneRequest, smartphoneInfoRequest);
+                smartphoneInfoRequestRepository.save(smartphoneInfoRequest);
+                return smartphoneInfoRequest.getId();
+            }
+            default:
+                return 0;
+        }
+    }
+
+    @Override
+    public List<ResponseActiveAnItemRequestDto> getActiveItemRequests(String managerCode) {
+        List<ActiveItemRequest> request = activeItemRequestRepository.findByManagerCodeAndStatus(managerCode, RequestStatus.PENDING.getValue());
+
+        return request.stream().map(r -> {
+            ResponseActiveAnItemRequestDto response = new ResponseActiveAnItemRequestDto();
+            response.setRequestId(r.getId());
+            response.setItemName(r.getItemName());
+            response.setStatus(Objects.requireNonNull(RequestStatus.fromValue(r.getStatus())).getDescription());
+            UserData userData = userDataRepository.findByUserCode(r.getUserCode()).orElseThrow(() -> new RuntimeException("User not found"));
+            response.setFullName(userData.getFullName());
+            Shop shop = shopRepository.findByOwnerCode(r.getUserCode()).orElseThrow(() -> new RuntimeException("Shop not found"));
+            response.setShopName(shop.getShopName());
             return response;
         }).toList();
     }

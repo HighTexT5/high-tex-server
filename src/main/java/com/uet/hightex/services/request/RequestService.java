@@ -1,9 +1,6 @@
 package com.uet.hightex.services.request;
 
-import com.uet.hightex.dtos.request.RequestBeADistributorDto;
-import com.uet.hightex.dtos.request.RequestSendOpinionOfManagerDto;
-import com.uet.hightex.dtos.request.ResponseBeADistributorRequestDetailDto;
-import com.uet.hightex.dtos.request.ResponseBeADistributorRequestDto;
+import com.uet.hightex.dtos.request.*;
 
 import java.util.List;
 
@@ -16,5 +13,11 @@ public interface RequestService {
 
     void opinionFromManager(String managerCode, RequestSendOpinionOfManagerDto requestSendOpinionOfManagerDto);
 
+    void opinionFromManagerOnItem(String managerCode, RequestSendOpinionOfManagerDto requestSendOpinionOfManagerDto);
+
     List<ResponseBeADistributorRequestDto> getUserBeADistributorRequest(String userCode);
+
+    void newActiveItemRequest(String userCode, RequestActiveAnItemDto requestActiveAnItemDto);
+
+    List<ResponseActiveAnItemRequestDto> getActiveItemRequests(String managerCode);
 }

@@ -1,10 +1,7 @@
 package com.uet.hightex.controllers.request;
 
 import com.uet.hightex.dtos.base.BaseResponse;
-import com.uet.hightex.dtos.request.RequestBeADistributorDto;
-import com.uet.hightex.dtos.request.RequestSendOpinionOfManagerDto;
-import com.uet.hightex.dtos.request.ResponseBeADistributorRequestDetailDto;
-import com.uet.hightex.dtos.request.ResponseBeADistributorRequestDto;
+import com.uet.hightex.dtos.request.*;
 import com.uet.hightex.enums.AppConstant;
 import com.uet.hightex.services.request.RequestService;
 import com.uet.hightex.services.support.BaseService;
@@ -74,6 +71,28 @@ public class RequestController {
             String managerCode = baseService.getUserCode();
             requestService.opinionFromManager(managerCode, requestSendOpinionOfManagerDto);
             return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", "Submit opinion successfully");
+        } catch (Exception e) {
+            return new BaseResponse<>(AppConstant.REQUEST_ERROR.getValue(), e.getMessage(), null);
+        }
+    }
+
+    @PostMapping("/distributor/create-active-item")
+    public BaseResponse<String> createActiveItemRequest(@RequestBody RequestActiveAnItemDto requestActiveAnItemDto) {
+        try {
+            String userCode = baseService.getUserCode();
+            requestService.newActiveItemRequest(userCode, requestActiveAnItemDto);
+            return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", "Create request successfully");
+        } catch (Exception e) {
+            return new BaseResponse<>(AppConstant.REQUEST_ERROR.getValue(), e.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/admin/get-list-active-item")
+    public BaseResponse<List<ResponseActiveAnItemRequestDto>> getListActiveItemRequest() {
+        try {
+            String managerCode = baseService.getUserCode();
+            List<ResponseActiveAnItemRequestDto> responseActiveAnItemRequestDtos = requestService.getActiveItemRequests(managerCode);
+            return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", responseActiveAnItemRequestDtos);
         } catch (Exception e) {
             return new BaseResponse<>(AppConstant.REQUEST_ERROR.getValue(), e.getMessage(), null);
         }
