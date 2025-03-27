@@ -186,8 +186,6 @@ public class RequestServiceImpl implements RequestService {
             shopService.createShop(request);
         }
 
-        user.setEmail("cevshclone2@gmail.com");
-
         if (request.getStatus().equals(RequestStatus.APPROVED.getValue())) {
             String subject = "HighTEx Request Approved";
             String template = "success-request-distributor-email";
