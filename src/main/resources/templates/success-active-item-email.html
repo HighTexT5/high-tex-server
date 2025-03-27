@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thông báo thêm sản phẩm thành công</title>
+</head>
+<body>
+<h2>Chúc mừng! Sản phẩm của bạn đã được thêm vào cửa hàng thành công!</h2>
+<p>Xin chào <strong th:text="${fullName}"></strong>,</p>
+<p>Sản phẩm <strong th:text="${productName}"></strong> đã được thêm thành công vào cửa hàng <strong th:text="${shopName}"></strong>.</p>
+<br />
+<p>Thông tin sản phẩm:</p>
+<ul>
+  <li>Mã sản phẩm: <strong th:text="${productCode}"></strong></li>
+  <li>Danh mục: <strong th:text="${category}"></strong></li>
+  <li>Giá: <strong th:text="${price}"></strong></li>
+</ul>
+<p>Bạn có thể quản lý sản phẩm trong trang quản trị của cửa hàng.</p>
+<p>Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với đội ngũ hỗ trợ qua email <strong th:text="${supportEmail}"></strong>.</p>
+<p>Trân trọng,</p>
+<p>Đội ngũ hỗ trợ.</p>
+</body>
+</html>

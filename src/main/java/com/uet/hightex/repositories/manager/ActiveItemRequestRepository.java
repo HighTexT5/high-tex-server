@@ -11,4 +11,6 @@ public interface ActiveItemRequestRepository extends JpaRepository<ActiveItemReq
     List<ActiveItemRequest> findByManagerCode(String managerCode);
 
     List<ActiveItemRequest> findByManagerCodeAndStatus(String managerCode, Integer status);
+
+    List<ActiveItemRequest> findByUserCodeAndStatusNot(String userCode, Integer status);
 }
