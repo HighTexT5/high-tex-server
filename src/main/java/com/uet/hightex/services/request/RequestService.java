@@ -20,4 +20,8 @@ public interface RequestService {
     void newActiveItemRequest(String userCode, RequestActiveAnItemDto requestActiveAnItemDto);
 
     List<ResponseActiveAnItemRequestDto> getActiveItemRequests(String managerCode);
+
+    ResponseActiveAnItemRequestDetailDto getActiveItemRequestDetail(Long requestId);
+
+    List<ResponseActiveAnItemRequestDto> getUserActiveItemRequest(String userCode);
 }

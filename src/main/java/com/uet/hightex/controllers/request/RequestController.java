@@ -97,4 +97,36 @@ public class RequestController {
             return new BaseResponse<>(AppConstant.REQUEST_ERROR.getValue(), e.getMessage(), null);
         }
     }
+
+    @PostMapping("/admin/opinion-from-manager-on-item")
+    public BaseResponse<String> opinionFromManagerOnItem(@RequestBody RequestSendOpinionOfManagerDto requestSendOpinionOfManagerDto) {
+        try {
+            String managerCode = baseService.getUserCode();
+            requestService.opinionFromManagerOnItem(managerCode, requestSendOpinionOfManagerDto);
+            return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", "Submit opinion successfully");
+        } catch (Exception e) {
+            return new BaseResponse<>(AppConstant.REQUEST_ERROR.getValue(), e.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/all/get-detail-active-item")
+    public BaseResponse<ResponseActiveAnItemRequestDetailDto> getDetailActiveItemRequest(@RequestParam Long requestId) {
+        try {
+            ResponseActiveAnItemRequestDetailDto response = requestService.getActiveItemRequestDetail(requestId);
+            return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", response);
+        } catch (Exception e) {
+            return new BaseResponse<>(AppConstant.REQUEST_ERROR.getValue(), e.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/all/get-list-active-item")
+    public BaseResponse<List<ResponseActiveAnItemRequestDto>> getUserListActiveItemRequest() {
+        try {
+            String userCode = baseService.getUserCode();
+            List<ResponseActiveAnItemRequestDto> responseActiveAnItemRequestDtos = requestService.getUserActiveItemRequest(userCode);
+            return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", responseActiveAnItemRequestDtos);
+        } catch (Exception e) {
+            return new BaseResponse<>(AppConstant.REQUEST_ERROR.getValue(), e.getMessage(), null);
+        }
+    }
 }

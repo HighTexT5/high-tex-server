@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thông báo thêm sản phẩm thất bại</title>
+</head>
+<body>
+<h2>Rất tiếc, yêu cầu thêm sản phẩm của bạn đã thất bại!</h2>
+<p>Xin chào <strong th:text="${fullName}"></strong>,</p>
+<p>Sản phẩm <strong th:text="${productName}"></strong> không thể được thêm vào cửa hàng <strong th:text="${shopName}"></strong> do một số lý do.</p>
+<br />
+<p>Người xử lý yêu cầu của bạn: <strong th:text="${managerName}"></strong></p>
+<p>Ý kiến: <strong th:text="${opinion}"></strong></p>
+<p>Chi tiết lỗi: <strong th:text="${detail}"></strong></p>
+<p>Vui lòng kiểm tra lại thông tin sản phẩm hoặc liên hệ với đội ngũ hỗ trợ qua email <strong th:text="${supportEmail}"></strong> để được hỗ trợ.</p>
+<p>Trân trọng,</p>
+<p>Đội ngũ hỗ trợ.</p>
+</body>
+</html>

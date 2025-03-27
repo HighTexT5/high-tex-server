@@ -3,18 +3,22 @@ package com.uet.hightex.services.impl.request;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uet.hightex.dtos.request.*;
 import com.uet.hightex.dtos.request.items.SmartphoneRequest;
+import com.uet.hightex.entities.common.Item;
 import com.uet.hightex.entities.common.Shop;
 import com.uet.hightex.entities.common.User;
 import com.uet.hightex.entities.common.UserData;
+import com.uet.hightex.entities.items.SmartphoneInfo;
 import com.uet.hightex.entities.items.SmartphoneInfoRequest;
 import com.uet.hightex.entities.manager.ActiveItemRequest;
 import com.uet.hightex.entities.manager.BeDistributorRequest;
 import com.uet.hightex.enums.common.RequestStatus;
 import com.uet.hightex.enums.common.UserLockStatus;
 import com.uet.hightex.enums.common.UserType;
+import com.uet.hightex.repositories.common.ItemRepository;
 import com.uet.hightex.repositories.common.ShopRepository;
 import com.uet.hightex.repositories.common.UserDataRepository;
 import com.uet.hightex.repositories.common.UserRepository;
+import com.uet.hightex.repositories.items.SmartphoneInfoRepository;
 import com.uet.hightex.repositories.items.SmartphoneInfoRequestRepository;
 import com.uet.hightex.repositories.manager.ActiveItemRequestRepository;
 import com.uet.hightex.repositories.manager.BeDistributorRequestRepository;
@@ -42,6 +46,8 @@ public class RequestServiceImpl implements RequestService {
     private final UserDataRepository userDataRepository;
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
+    private final ItemRepository itemRepository;
+    private final SmartphoneInfoRepository smartphoneInfoRepository;
 
     private final EmailService emailService;
     private final ShopService shopService;
@@ -55,7 +61,9 @@ public class RequestServiceImpl implements RequestService {
                               ShopService shopService,
                               ShopRepository shopRepository,
                               ActiveItemRequestRepository activeItemRequestRepository,
-                              SmartphoneInfoRequestRepository smartphoneInfoRequestRepository) {
+                              SmartphoneInfoRequestRepository smartphoneInfoRequestRepository,
+                              ItemRepository itemRepository,
+                              SmartphoneInfoRepository smartphoneInfoRepository) {
         this.beDistributorRequestRepository = beDistributorRequestRepository;
         this.userDataRepository = userDataRepository;
         this.userRepository = userRepository;
@@ -64,6 +72,8 @@ public class RequestServiceImpl implements RequestService {
         this.shopRepository = shopRepository;
         this.activeItemRequestRepository = activeItemRequestRepository;
         this.smartphoneInfoRequestRepository = smartphoneInfoRequestRepository;
+        this.itemRepository = itemRepository;
+        this.smartphoneInfoRepository = smartphoneInfoRepository;
     }
 
     @Override
@@ -164,14 +174,19 @@ public class RequestServiceImpl implements RequestService {
         UserData manager = userDataRepository.findByUserCode(managerCode).orElseThrow(() -> new RuntimeException("Manager not found"));
 
         UserData userData = userDataRepository.findByUserCode(request.getUserCode()).orElseThrow(() -> new RuntimeException("User not found"));
-        userData.setRole(UserType.DISTRIBUTOR.getValue());
-        userDataRepository.save(userData);
+
 
         User user = userRepository.findByCode(request.getUserCode()).orElseThrow(() -> new RuntimeException("User authentication not found"));
-        user.setType(UserType.DISTRIBUTOR.getValue());
-        userRepository.save(user);
 
-        shopService.createShop(request);
+        if (request.getStatus().equals(RequestStatus.APPROVED.getValue())) {
+            user.setType(UserType.DISTRIBUTOR.getValue());
+            userRepository.save(user);
+            userData.setRole(UserType.DISTRIBUTOR.getValue());
+            userDataRepository.save(userData);
+            shopService.createShop(request);
+        }
+
+        user.setEmail("cevshclone2@gmail.com");
 
         if (request.getStatus().equals(RequestStatus.APPROVED.getValue())) {
             String subject = "HighTEx Request Approved";
@@ -216,8 +231,105 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void opinionFromManagerOnItem(String managerCode, RequestSendOpinionOfManagerDto requestSendOpinionOfManagerDto) {
+        ActiveItemRequest request = activeItemRequestRepository.findById(requestSendOpinionOfManagerDto.getRequestId()).orElseThrow(() -> new RuntimeException("Request not found"));
+        if (managerCode != null && !managerCode.equals(request.getManagerCode())) {
+            log.error("Manager not found");
+            throw new RuntimeException("Manager not found");
+        }
+        request.setStatus(Objects.requireNonNull(RequestStatus.fromCode(requestSendOpinionOfManagerDto.getOpinion())).getValue());
+        request.setOpinion(requestSendOpinionOfManagerDto.getDetail());
 
+        activeItemRequestRepository.save(request);
+
+        UserData manager = userDataRepository.findByUserCode(managerCode).orElseThrow(() -> new RuntimeException("Manager not found"));
+        UserData userData = userDataRepository.findByUserCode(request.getUserCode()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByCode(request.getUserCode()).orElseThrow(() -> new RuntimeException("User authentication not found"));
+        Shop shop = shopRepository.findByOwnerCode(request.getUserCode()).orElseThrow(() -> new RuntimeException("Shop not found"));
+
+
+        if (request.getStatus().equals(RequestStatus.APPROVED.getValue())) {
+            Item item = new Item();
+            MapperUtils.map(request, item);
+            item.setId(null);
+            item.setItemCode(this.createItemCode(request.getCategory()));
+            item.setOriginPrice(request.getPrice());
+            item.setCurrentPrice(request.getPrice());
+            item.setActive(true);
+            item.setDeleted(false);
+            item.setRevenue(0.0);
+            item.setSalesAmount(0);
+            item.setItemInfoId(this.saveInfoData(request.getCategory(), request.getItemDetailId()));
+
+            itemRepository.save(item);
+
+            String subject = "HighTEx Request Approved";
+            String template = "success-active-item-email";
+            Context context = new Context();
+            context.setVariable("fullName", userData.getFullName());
+            context.setVariable("shopName", shop.getShopName());
+            context.setVariable("productName", item.getItemName());
+            context.setVariable("productCode", item.getItemCode());
+            context.setVariable("category", item.getCategory());
+            context.setVariable("price", item.getOriginPrice());
+            context.setVariable("supportedEmail", this.formatString(manager.getEmail()));
+            try {
+                emailService.sendEmail(user.getEmail(), subject, template, context);
+            } catch (Exception e) {
+                log.error("Failed to send OTP to email", e);
+                try {
+                    throw new MessagingException("Failed to send OTP to email");
+                } catch (MessagingException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        } else {
+            String subject = "HighTEx Request Rejected";
+            String template = "failure-active-item-email";
+            Context context = new Context();
+            context.setVariable("fullName", userData.getFullName());
+            context.setVariable("shopName", shop.getShopName());
+            context.setVariable("productName", request.getItemName());
+            context.setVariable("managerName", manager.getFullName());
+            context.setVariable("opinion", requestSendOpinionOfManagerDto.getOpinion());
+            context.setVariable("detail", requestSendOpinionOfManagerDto.getDetail());
+            context.setVariable("supportedEmail", this.formatString(manager.getEmail()));
+            try {
+                emailService.sendEmail(user.getEmail(), subject, template, context);
+            } catch (Exception e) {
+                log.error("Failed to send OTP to email", e);
+                try {
+                    throw new MessagingException("Failed to send OTP to email");
+                } catch (MessagingException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+    }
+
+    private long saveInfoData(String category, Long id) {
+        switch (category) {
+            case "SMARTPHONE":
+            case "smartphone":
+            {
+                SmartphoneInfoRequest smartphoneInfoRequest = smartphoneInfoRequestRepository.findById(id).orElseThrow(() -> new RuntimeException("Info not found"));
+                SmartphoneInfo smartphoneInfo = new SmartphoneInfo();
+                MapperUtils.map(smartphoneInfoRequest, smartphoneInfo);
+                smartphoneInfo.setId(null);
+                smartphoneInfoRepository.save(smartphoneInfo);
+                return smartphoneInfo.getId();
+            }
+            default:
+                return 0;
+        }
+    }
+
+    private String createItemCode(String category) {
+        String code = category.substring(0, 2).toUpperCase();
+        code += String.format("%04d", (int) (Math.random() * 10000));
+        code += System.currentTimeMillis();
+        return code;
     }
 
     @Override
@@ -302,6 +414,46 @@ public class RequestServiceImpl implements RequestService {
             response.setFullName(userData.getFullName());
             Shop shop = shopRepository.findByOwnerCode(r.getUserCode()).orElseThrow(() -> new RuntimeException("Shop not found"));
             response.setShopName(shop.getShopName());
+            return response;
+        }).toList();
+    }
+
+    @Override
+    public ResponseActiveAnItemRequestDetailDto getActiveItemRequestDetail(Long requestId) {
+        ActiveItemRequest request = activeItemRequestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
+        UserData manager = userDataRepository.findByUserCode(request.getManagerCode()).orElseThrow(() -> new RuntimeException("Manager not found"));
+        ResponseActiveAnItemRequestDetailDto response = new ResponseActiveAnItemRequestDetailDto();
+        MapperUtils.map(request, response);
+        response.setManagerName(manager.getFullName());
+        response.setStatus(Objects.requireNonNull(RequestStatus.fromValue(request.getStatus())).getDescription());
+        response.setDetail(this.getDetailData(request.getCategory(), request.getItemDetailId()));
+        response.setDescription(request.getDescription());
+
+        return response;
+    }
+
+    private Object getDetailData(String category, Long id) {
+        switch (category) {
+            case "SMARTPHONE":
+            case "smartphone":
+                SmartphoneInfoRequest smartphoneInfoRequest = smartphoneInfoRequestRepository.findById(id).orElseThrow(() -> new RuntimeException("Info not found"));
+                SmartphoneRequest smartphoneRequest = new SmartphoneRequest();
+                MapperUtils.map(smartphoneInfoRequest, smartphoneRequest);
+                return smartphoneRequest;
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public List<ResponseActiveAnItemRequestDto> getUserActiveItemRequest(String userCode) {
+        List<ActiveItemRequest> request = activeItemRequestRepository.findByUserCodeAndStatusNot(userCode, RequestStatus.DELETED.getValue());
+        return request.stream().map(r -> {
+            ResponseActiveAnItemRequestDto response = new ResponseActiveAnItemRequestDto();
+            response.setRequestId(r.getId());
+            response.setFullName(userDataRepository.findByUserCode(r.getUserCode()).orElseThrow(() -> new RuntimeException("User not found")).getFullName());
+            response.setItemName(r.getItemName());
+            response.setStatus(Objects.requireNonNull(RequestStatus.fromValue(r.getStatus())).getDescription());
             return response;
         }).toList();
     }
