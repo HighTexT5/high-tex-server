@@ -56,6 +56,9 @@ public class Item extends BaseEntity {
     @Column(name = "FILE_URLS", columnDefinition = "JSON")
     private List<String> fileUrls;
 
+    @Column(name = "THUMBNAIL_URL")
+    private String thumbnailUrl;
+
     @Column(name = "IS_ACTIVE")
     private boolean isActive;
 
