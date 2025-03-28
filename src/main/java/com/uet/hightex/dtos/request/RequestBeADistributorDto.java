@@ -31,4 +31,7 @@ public class RequestBeADistributorDto {
 
     @Schema(description = "Description")
     private String description;
+
+    @Schema(description = "FileUrl")
+    private String fileUrl;
 }
