@@ -32,6 +32,7 @@ public class ItemServiceImpl implements ItemService {
                     MapperUtils.map(item, responseItem);
                     responseItem.setPrice(item.getCurrentPrice());
                     responseItem.setName(item.getItemName());
+                    responseItem.setImageURL(item.getThumbnailUrl());
 
                     return responseItem;
                 }
