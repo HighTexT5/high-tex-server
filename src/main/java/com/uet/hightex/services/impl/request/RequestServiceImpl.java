@@ -376,6 +376,7 @@ public class RequestServiceImpl implements RequestService {
         request.setStatus(RequestStatus.PENDING.getValue());
         request.setBrand(requestActiveAnItemDto.getBrand());
         request.setProductSource(requestActiveAnItemDto.getProductSource());
+        request.setProof(requestActiveAnItemDto.getProof());
         request.setItemDetailId(this.saveInfoData(requestActiveAnItemDto.getCategory(), requestActiveAnItemDto.getDetail()));
 
         activeItemRequestRepository.save(request);
