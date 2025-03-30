@@ -25,10 +25,10 @@ public class OrderController {
     }
 
     @PostMapping("/all/create-order-from-cart")
-    public ResponseEntity<?> createOrderFromCart() {
+    public ResponseEntity<?> createOrderFromCart(@RequestParam String addressCode) {
         try {
             String userCode = baseService.getUserCode();
-            orderService.createOrderFromCart(userCode);
+            orderService.createOrderFromCart(userCode, addressCode);
             return ResponseEntity.ok("Đặt mua hàng thành công");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

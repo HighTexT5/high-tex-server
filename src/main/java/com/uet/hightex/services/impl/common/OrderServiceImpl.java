@@ -42,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createOrderFromCart(String userCode) throws IOException {
+    public void createOrderFromCart(String userCode, String addressCode) throws IOException {
         ShoppingCart cart = shoppingCartRepository.findByUserCodeAndIsDeletedFalse(userCode)
                 .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
 
@@ -63,6 +63,7 @@ public class OrderServiceImpl implements OrderService {
                     .isDelivered(false)
                     .isCanceled(false)
                     .status(RequestStatus.PENDING.getCode())
+                    .addressCode(addressCode)
                     .build();
             orderRepository.save(order);
         }

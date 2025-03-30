@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface OrderService {
-    void createOrderFromCart(String userCode) throws IOException;
+    void createOrderFromCart(String userCode, String addressCode) throws IOException;
 
     List<ResponseOrderForDistributorInList> getListOrderForDistributor(String distributorCode);
 
