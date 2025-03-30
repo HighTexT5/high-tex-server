@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ResponseItemDetail getItemDetail(Long id) {
+    public ResponseItemDetail getItemDetail(Long id) throws IOException {
         Item item = itemRepository.findById(id).orElse(null);
         if (item == null || !item.isActive() || item.isDeleted()) {
             return null;
@@ -60,7 +61,7 @@ public class ItemServiceImpl implements ItemService {
         MapperUtils.map(item, responseItemDetail);
         shopRepository.findByShopCode(item.getShopCode()).ifPresent(shop -> responseItemDetail.setShopName(shop.getShopName()));
         if (item.getFileUrls() != null && !item.getFileUrls().isEmpty()) {
-            responseItemDetail.setFileUrls(item.getFileUrls().toArray(new String[0]));
+            responseItemDetail.setFileUrls(item.getListUrlsArray());
         }
         responseItemDetail.setDetail(getDetail(item.getCategory(), item.getItemInfoId()));
         return responseItemDetail;

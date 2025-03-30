@@ -1,5 +1,6 @@
 package com.uet.hightex.entities.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uet.hightex.entities.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.io.IOException;
 import java.util.List;
 
 @SuperBuilder
@@ -54,7 +56,7 @@ public class Item extends BaseEntity {
     private double rating;
 
     @Column(name = "FILE_URLS", columnDefinition = "JSON")
-    private List<String> fileUrls;
+    private String fileUrls;
 
     @Column(name = "THUMBNAIL_URL")
     private String thumbnailUrl;
@@ -73,4 +75,14 @@ public class Item extends BaseEntity {
 
     @Column(name = "ITEM_INFO_ID")
     private Long itemInfoId;
+
+    public String[] getListUrlsArray() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(this.fileUrls, String[].class);
+    }
+
+    public void setListUrlsArray(String[] listItemCodeArray) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        this.fileUrls = mapper.writeValueAsString(listItemCodeArray);
+    }
 }

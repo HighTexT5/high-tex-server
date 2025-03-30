@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class ItemController {
     }
 
     @GetMapping("/detail")
-    public BaseResponse<ResponseItemDetail> getItemDetail(@RequestParam Long id) {
+    public BaseResponse<ResponseItemDetail> getItemDetail(@RequestParam Long id) throws IOException {
         return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", itemService.getItemDetail(id));
     }
 }
