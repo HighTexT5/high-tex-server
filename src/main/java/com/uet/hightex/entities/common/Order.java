@@ -47,4 +47,7 @@ public class Order extends BaseEntity {
 
     @Column(name = "STATUS")
     private String status;
+
+    @Column(name = "ADDRESS_CODE")
+    private String addressCode;
 }
