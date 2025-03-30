@@ -14,6 +14,9 @@ public class ResponseItemInCart {
     @Schema(description = "Item name")
     private String itemName;
 
+    @Schema(description = "Item code")
+    private String itemCode;
+
     @Schema(description = "Quantity")
     private int quantity;
 

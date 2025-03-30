@@ -58,6 +58,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/request/distributor/**").hasAuthority("ROLE_DISTRIBUTOR")
                                 .requestMatchers("/api/request/admin/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/api/request/all/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_DISTRIBUTOR")
+                                .requestMatchers("/api/order/all/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_DISTRIBUTOR")
+                                .requestMatchers("/api/order/distributor/**").hasAuthority("ROLE_DISTRIBUTOR")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(
