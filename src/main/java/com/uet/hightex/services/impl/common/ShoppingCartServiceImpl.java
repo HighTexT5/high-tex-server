@@ -97,7 +97,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         for (int i = 0; i < itemCodes.length; i++) {
             Item item = itemRepository.findByItemCode(itemCodes[i]).orElse(null);
             if (item != null) {
-                responseCartOfItem.addItem(new ResponseItemInCart(item.getItemName(), quantities[i], item.getCurrentPrice(), item.getThumbnailUrl()));
+                responseCartOfItem.addItem(new ResponseItemInCart(item.getItemName(), item.getItemCode(), quantities[i], item.getCurrentPrice(), item.getThumbnailUrl()));
             }
         }
         return responseCartOfItem;
