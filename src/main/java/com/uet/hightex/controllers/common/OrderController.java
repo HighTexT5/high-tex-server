@@ -1,6 +1,8 @@
 package com.uet.hightex.controllers.common;
 
 import com.uet.hightex.dtos.base.BaseResponse;
+import com.uet.hightex.dtos.order.AcceptOrderRequestDto;
+import com.uet.hightex.dtos.order.OrderRequestDto;
 import com.uet.hightex.dtos.order.ResponseOrderForDistributorInList;
 import com.uet.hightex.enums.AppConstant;
 import com.uet.hightex.services.common.OrderService;
@@ -25,10 +27,10 @@ public class OrderController {
     }
 
     @PostMapping("/all/create-order-from-cart")
-    public ResponseEntity<?> createOrderFromCart(@RequestParam String addressCode) {
+    public ResponseEntity<?> createOrderFromCart(@RequestBody OrderRequestDto orderRequest) {
         try {
             String userCode = baseService.getUserCode();
-            orderService.createOrderFromCart(userCode, addressCode);
+            orderService.createOrderFromCart(userCode, orderRequest.getAddressCode());
             return ResponseEntity.ok("Đặt mua hàng thành công");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -42,9 +44,9 @@ public class OrderController {
     }
 
     @PostMapping("/distributor/accept-order")
-    public ResponseEntity<?> acceptOrder(@RequestParam String orderCode) {
+    public ResponseEntity<?> acceptOrder(@RequestBody AcceptOrderRequestDto request) {
         try {
-            orderService.acceptOrder(orderCode);
+            orderService.acceptOrder(request.getOrderCode());
             return ResponseEntity.ok("Xác nhận đơn hàng thành công");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

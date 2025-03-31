@@ -1,7 +1,9 @@
 package com.uet.hightex.controllers.common;
 
 import com.uet.hightex.dtos.base.BaseResponse;
+import com.uet.hightex.dtos.item.AddProductToCartRequestDto;
 import com.uet.hightex.dtos.item.ResponseCartOfItem;
+import com.uet.hightex.dtos.item.UpdateCartItemQuantityRequestDto;
 import com.uet.hightex.enums.AppConstant;
 import com.uet.hightex.services.common.ShoppingCartService;
 import com.uet.hightex.services.support.BaseService;
@@ -23,10 +25,10 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public BaseResponse<String> addProductToCart(@RequestParam String itemCode, @RequestParam Integer quantity) {
+    public BaseResponse<String> addProductToCart(@RequestBody AddProductToCartRequestDto request) {
         String userCode = baseService.getUserCode();
         try {
-            shoppingCartService.addProductToCart(userCode, itemCode, quantity);
+            shoppingCartService.addProductToCart(userCode, request.getItemCode(), request.getQuantity());
         } catch (Exception e) {
             throw new RuntimeException("Add product to cart failed");
         }
@@ -38,4 +40,20 @@ public class CartController {
         String userCode = baseService.getUserCode();
         return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", shoppingCartService.getCartOfItem(userCode));
     }
+
+    // PATCH Controller Method
+//    @PatchMapping("/update-quantity")
+//    public BaseResponse<String> updateCartItemQuantity(@RequestBody UpdateCartItemQuantityRequestDto request) {
+//        String userCode = baseService.getUserCode();
+//        try {
+//            shoppingCartService.updateItemQuantity(userCode, request.getItemCode(), request.getQuantity());
+//            return new BaseResponse<>(
+//                    AppConstant.REQUEST_SUCCESS.getValue(),
+//                    "Success",
+//                    "Item quantity updated successfully"
+//            );
+//        } catch (Exception e) {
+//            throw new RuntimeException("Update item quantity failed: " + e.getMessage());
+//        }
+//    }
 }

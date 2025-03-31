@@ -8,4 +8,6 @@ public interface ShoppingCartService {
     void addProductToCart(String userCode, String itemCode, Integer quantity) throws IOException;
 
     ResponseCartOfItem getCartOfItem(String userCode) throws IOException;
+
+//    void updateItemQuantity(String userCode, String itemCode, Integer quantity);
 }
