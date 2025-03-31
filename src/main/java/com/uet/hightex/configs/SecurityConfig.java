@@ -74,7 +74,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Cho phép truy cập từ origin này
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://172.21.144.1:3000")); // Cho phép truy cập từ origin này
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Cho phép các phương thức này
         configuration.setAllowedHeaders(List.of("*")); // Cho phép tất cả các headers
         configuration.setAllowCredentials(true); // Cho phép gửi cookie
