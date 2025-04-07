@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ResponseUserReceiveAddress {
     @Schema(description = "Mã địa chỉ")
-    private String shippingAddressCode;
+    private String addressCode;
 
     @Schema(description = "Province")
     private String province;
@@ -32,7 +32,7 @@ public class ResponseUserReceiveAddress {
 
     public static ResponseUserReceiveAddress fromEntity(UserReceiveAddress userReceiveAddress) {
         ResponseUserReceiveAddress responseUserReceiveAddress = new ResponseUserReceiveAddress();
-        responseUserReceiveAddress.setShippingAddressCode(userReceiveAddress.getAddressCode());
+        responseUserReceiveAddress.setAddressCode(userReceiveAddress.getAddressCode());
         responseUserReceiveAddress.setProvince(userReceiveAddress.getProvince());
         responseUserReceiveAddress.setDistrict(userReceiveAddress.getDistrict());
         responseUserReceiveAddress.setCommune(userReceiveAddress.getCommune());

@@ -102,4 +102,25 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
         return responseCartOfItem;
     }
+
+//    @Override
+//    public void updateItemQuantity(String userCode, String itemCode, Integer quantity) {
+//        // Get user's cart
+//        ShoppingCart cart = shoppingCartRepository.findByUserCodeAndIsDeletedFalse(userCode).orElse(null);
+//        if (cart == null) {
+//            throw new RuntimeException("Cart not found");
+//        }
+//
+//        // Find the item in the cart
+//        Item itemToUpdate = cart.getItems().stream()
+//                .filter(item -> item.getItemCode().equals(itemCode))
+//                .findFirst()
+//                .orElseThrow(() -> new RuntimeException("Item not found in cart"));
+//
+//        // Update quantity
+//        itemToUpdate.setQuantity(quantity);
+//
+//        // Save updated cart
+//        cartRepository.save(cart);
+//    }
 }
