@@ -14,6 +14,7 @@ import com.uet.hightex.entities.manager.BeDistributorRequest;
 import com.uet.hightex.enums.common.RequestStatus;
 import com.uet.hightex.enums.common.UserLockStatus;
 import com.uet.hightex.enums.common.UserType;
+import com.uet.hightex.enums.item.Category;
 import com.uet.hightex.repositories.common.ItemRepository;
 import com.uet.hightex.repositories.common.ShopRepository;
 import com.uet.hightex.repositories.common.UserDataRepository;
@@ -408,6 +409,7 @@ public class RequestServiceImpl implements RequestService {
             ResponseActiveAnItemRequestDto response = new ResponseActiveAnItemRequestDto();
             response.setRequestId(r.getId());
             response.setItemName(r.getItemName());
+            response.setItemCategory(Category.fromCode(r.getCategory().toUpperCase()).getDescription());
             response.setStatus(Objects.requireNonNull(RequestStatus.fromValue(r.getStatus())).getDescription());
             UserData userData = userDataRepository.findByUserCode(r.getUserCode()).orElseThrow(() -> new RuntimeException("User not found"));
             response.setFullName(userData.getFullName());
@@ -452,6 +454,7 @@ public class RequestServiceImpl implements RequestService {
             response.setRequestId(r.getId());
             response.setFullName(userDataRepository.findByUserCode(r.getUserCode()).orElseThrow(() -> new RuntimeException("User not found")).getFullName());
             response.setItemName(r.getItemName());
+            response.setItemCategory(Category.fromCode(r.getCategory().toUpperCase()).getDescription());
             response.setStatus(Objects.requireNonNull(RequestStatus.fromValue(r.getStatus())).getDescription());
             return response;
         }).toList();

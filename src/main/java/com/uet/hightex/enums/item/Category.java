@@ -15,4 +15,22 @@ public enum Category {
     private final String name;
     private final String code;
     private final String description;
+
+    public static Category fromValue(int value) {
+        for (Category category : Category.values()) {
+            if (category.getValue() == value) {
+                return category;
+            }
+        }
+        throw new IllegalArgumentException("No category found with value: " + value);
+    }
+
+    public static Category fromCode(String code) {
+        for (Category category : Category.values()) {
+            if (category.getCode().equalsIgnoreCase(code)) {
+                return category;
+            }
+        }
+        throw new IllegalArgumentException("No category found with code: " + code);
+    }
 }
