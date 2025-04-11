@@ -6,6 +6,8 @@ import com.uet.hightex.enums.AppConstant;
 import com.uet.hightex.services.request.RequestService;
 import com.uet.hightex.services.support.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +31,9 @@ public class RequestController {
             requestService.newBeADistributorRequest(userCode, requestBeADistributorDto);
             return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", "Create request successfully");
         } catch (Exception e) {
-            return new BaseResponse<>(AppConstant.REQUEST_ERROR.getValue(), e.getMessage(), null);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new BaseResponse<>(AppConstant.REQUEST_ERROR.getValue(), e.getMessage(), null));
+            throw new RuntimeException("Create request failed: " + e.getMessage());
         }
     }
 

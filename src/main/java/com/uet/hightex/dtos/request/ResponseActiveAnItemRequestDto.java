@@ -23,6 +23,9 @@ public class ResponseActiveAnItemRequestDto {
     @Schema(description = "Item name")
     private String itemName;
 
+    @Schema(description = "Item category")
+    private String itemCategory;
+
     @Schema(description = "Status")
     private String status;
 }
