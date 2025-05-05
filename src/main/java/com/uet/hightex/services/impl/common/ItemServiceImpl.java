@@ -67,6 +67,38 @@ public class ItemServiceImpl implements ItemService {
         return responseItemDetail;
     }
 
+    @Override
+    public List<ResponseItem> getItemsBySearch(String search) {
+        List<Item> items = itemRepository.findAllByItemNameContainingAndIsActiveTrue(search);
+        return items.stream().map(
+                item -> {
+                    ResponseItem responseItem = new ResponseItem();
+                    MapperUtils.map(item, responseItem);
+                    responseItem.setPrice(item.getCurrentPrice());
+                    responseItem.setName(item.getItemName());
+                    responseItem.setImageURL(item.getThumbnailUrl());
+
+                    return responseItem;
+                }
+        ).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ResponseItem> getItemsByShopCode(String shopCode) {
+        List<Item> items = itemRepository.findAllByShopCodeAndIsActiveTrue(shopCode);
+        return items.stream().map(
+                item -> {
+                    ResponseItem responseItem = new ResponseItem();
+                    MapperUtils.map(item, responseItem);
+                    responseItem.setPrice(item.getCurrentPrice());
+                    responseItem.setName(item.getItemName());
+                    responseItem.setImageURL(item.getThumbnailUrl());
+
+                    return responseItem;
+                }
+        ).collect(Collectors.toList());
+    }
+
     private Object getDetail(String category, Long infoId) {
         switch (category) {
             case "SMARTPHONE":

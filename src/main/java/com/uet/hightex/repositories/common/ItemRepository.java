@@ -14,4 +14,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findByItemCode(String itemCode);
 
     List<Item> findAllByShopCodeAndIsActiveTrue(String shopCode);
+
+    List<Item> findAllByItemNameContainingAndIsActiveTrue(String itemName);
 }
