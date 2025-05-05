@@ -1,5 +1,6 @@
 package com.uet.hightex.services.impl.common;
 
+import com.uet.hightex.dtos.common.ShopInfoDto;
 import com.uet.hightex.entities.common.Shop;
 import com.uet.hightex.entities.manager.BeDistributorRequest;
 import com.uet.hightex.enums.common.ShopStatus;
@@ -42,6 +43,32 @@ public class ShopServiceImpl implements ShopService {
         shop.setPaymentInfoId(null);
 
         shopRepository.save(shop);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ShopInfoDto getShopInfo(String shopCode) {
+        Shop shop = shopRepository.findByShopCode(shopCode).orElse(null);
+        if (shop == null) {
+            return null;
+        }
+
+        ShopInfoDto shopInfoDto = new ShopInfoDto();
+        shopInfoDto.setShopCode(shop.getShopCode());
+        shopInfoDto.setShopName(shop.getShopName());
+        shopInfoDto.setShopAddress(shop.getShopAddress());
+        shopInfoDto.setPhoneNumber(shop.getPhoneNumber());
+        shopInfoDto.setEmail(shop.getEmail());
+        shopInfoDto.setOwnerCode(shop.getOwnerCode());
+        shopInfoDto.setShopStatus(shop.getShopStatus());
+        shopInfoDto.setAvatarUrl(shop.getAvatarUrl());
+        shopInfoDto.setNumberOfItems(shop.getNumberOfItems());
+        shopInfoDto.setNumberOfOrders(shop.getNumberOfOrders());
+        shopInfoDto.setTotalRevenue(shop.getTotalRevenue());
+        shopInfoDto.setTotalSales(shop.getTotalSales());
+        shopInfoDto.setTaxCode(shop.getTaxCode());
+
+        return shopInfoDto;
     }
 
     private String getShopCode() {
