@@ -12,4 +12,6 @@ public interface ItemService {
     ResponseItemDetail getItemDetail(Long id) throws IOException;
 
     List<ResponseItem> getItemsBySearch(String keyword);
+
+    List<ResponseItem> getItemsByShopCode(String shopCode);
 }

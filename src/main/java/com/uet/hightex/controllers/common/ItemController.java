@@ -38,4 +38,9 @@ public class ItemController {
     public BaseResponse<List<ResponseItem>> searchItems(@RequestParam String keyword) {
         return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", itemService.getItemsBySearch(keyword));
     }
+
+    @GetMapping("/shopCode")
+    public BaseResponse<List<ResponseItem>> getItemsByShopCode(@RequestParam String shopCode) {
+        return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", itemService.getItemsByShopCode(shopCode));
+    }
 }
