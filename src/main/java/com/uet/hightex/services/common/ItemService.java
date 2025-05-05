@@ -10,4 +10,6 @@ public interface ItemService {
     List<ResponseItem> getAllItems();
 
     ResponseItemDetail getItemDetail(Long id) throws IOException;
+
+    List<ResponseItem> getItemsBySearch(String keyword);
 }
