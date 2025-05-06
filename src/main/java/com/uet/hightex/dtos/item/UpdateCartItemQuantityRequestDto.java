@@ -1,25 +1,14 @@
 package com.uet.hightex.dtos.item;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class UpdateCartItemQuantityRequestDto {
+    // Getters and Setters
     private String itemCode;
     private Integer quantity;
-
-    // Getters and Setters
-    public String getItemCode() {
-        return itemCode;
-    }
-
-    public void setItemCode(String itemCode) {
-        this.itemCode = itemCode;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 
     // Default constructor
     public UpdateCartItemQuantityRequestDto() {
