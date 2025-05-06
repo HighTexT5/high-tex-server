@@ -32,6 +32,16 @@ public class UserDataController {
         }
     }
 
+    @GetMapping("/get-by-code")
+    public BaseResponse<ResponseUserDataDto> getUserDataByCode(@RequestParam String userCode) {
+        try {
+            ResponseUserDataDto responseUserDataDto = userDataService.getUserData(userCode);
+            return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", responseUserDataDto);
+        } catch (Exception e) {
+            return new BaseResponse<>(AppConstant.REQUEST_GET_USER_DATA_FAIL.getValue(), "Error", null);
+        }
+    }
+
     @PutMapping("/update")
     public BaseResponse<String> updateUserData(@RequestBody RequestUpdateUserDataDto requestUpdateUserDataDto) {
         try {

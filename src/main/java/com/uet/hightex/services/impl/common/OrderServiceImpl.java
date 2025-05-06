@@ -86,7 +86,8 @@ public class OrderServiceImpl implements OrderService {
                         item.getItemName(),
                         order.getQuantity(),
                         order.getTotalPrice(),
-                        Objects.requireNonNull(RequestStatus.fromCode(order.getStatus())).getDescription()
+                        Objects.requireNonNull(RequestStatus.fromCode(order.getStatus())).getDescription(),
+                        order.getUserCode()
                 ));
             }
         }
@@ -120,7 +121,8 @@ public class OrderServiceImpl implements OrderService {
                         item.getItemName(),
                         order.getQuantity(),
                         order.getTotalPrice(),
-                        Objects.requireNonNull(RequestStatus.fromCode(order.getStatus())).getDescription()
+                        Objects.requireNonNull(RequestStatus.fromCode(order.getStatus())).getDescription(),
+                        order.getUserCode()
                 ));
             }
         }

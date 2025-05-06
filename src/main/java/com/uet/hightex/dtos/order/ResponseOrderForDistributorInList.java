@@ -28,4 +28,6 @@ public class ResponseOrderForDistributorInList {
 
     @Schema(description = "Trạng thái")
     private String status;
+
+    private String userCode;
 }
