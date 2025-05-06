@@ -9,5 +9,7 @@ public interface ShoppingCartService {
 
     ResponseCartOfItem getCartOfItem(String userCode) throws IOException;
 
-//    void updateItemQuantity(String userCode, String itemCode, Integer quantity);
+    void updateItemQuantity(String userCode, String itemCode, Integer quantity) throws IOException;
+
+    void removeAnItemFromCart(String userCode, String itemCode) throws IOException;
 }

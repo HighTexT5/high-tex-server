@@ -41,19 +41,33 @@ public class CartController {
         return new BaseResponse<>(AppConstant.REQUEST_SUCCESS.getValue(), "Success", shoppingCartService.getCartOfItem(userCode));
     }
 
-    // PATCH Controller Method
-//    @PatchMapping("/update-quantity")
-//    public BaseResponse<String> updateCartItemQuantity(@RequestBody UpdateCartItemQuantityRequestDto request) {
-//        String userCode = baseService.getUserCode();
-//        try {
-//            shoppingCartService.updateItemQuantity(userCode, request.getItemCode(), request.getQuantity());
-//            return new BaseResponse<>(
-//                    AppConstant.REQUEST_SUCCESS.getValue(),
-//                    "Success",
-//                    "Item quantity updated successfully"
-//            );
-//        } catch (Exception e) {
-//            throw new RuntimeException("Update item quantity failed: " + e.getMessage());
-//        }
-//    }
+    @PatchMapping("/update-quantity")
+    public BaseResponse<String> updateCartItemQuantity(@RequestBody UpdateCartItemQuantityRequestDto request) {
+        String userCode = baseService.getUserCode();
+        try {
+            shoppingCartService.updateItemQuantity(userCode, request.getItemCode(), request.getQuantity());
+            return new BaseResponse<>(
+                    AppConstant.REQUEST_SUCCESS.getValue(),
+                    "Success",
+                    "Item quantity updated successfully"
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Update item quantity failed: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/remove-item")
+    public BaseResponse<String> removeAnItemFromCart(@RequestParam String itemCode) {
+        String userCode = baseService.getUserCode();
+        try {
+            shoppingCartService.removeAnItemFromCart(userCode, itemCode);
+            return new BaseResponse<>(
+                    AppConstant.REQUEST_SUCCESS.getValue(),
+                    "Success",
+                    "Item removed from cart successfully"
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Remove item from cart failed: " + e.getMessage());
+        }
+    }
 }

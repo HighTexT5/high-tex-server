@@ -103,24 +103,62 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return responseCartOfItem;
     }
 
-//    @Override
-//    public void updateItemQuantity(String userCode, String itemCode, Integer quantity) {
-//        // Get user's cart
-//        ShoppingCart cart = shoppingCartRepository.findByUserCodeAndIsDeletedFalse(userCode).orElse(null);
-//        if (cart == null) {
-//            throw new RuntimeException("Cart not found");
-//        }
-//
-//        // Find the item in the cart
-//        Item itemToUpdate = cart.getItems().stream()
-//                .filter(item -> item.getItemCode().equals(itemCode))
-//                .findFirst()
-//                .orElseThrow(() -> new RuntimeException("Item not found in cart"));
-//
-//        // Update quantity
-//        itemToUpdate.setQuantity(quantity);
-//
-//        // Save updated cart
-//        cartRepository.save(cart);
-//    }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateItemQuantity(String userCode, String itemCode, Integer quantity) throws IOException {
+        ShoppingCart cart = shoppingCartRepository.findByUserCodeAndIsDeletedFalse(userCode).orElse(null);
+        if (cart != null) {
+            String[] itemCodes = cart.getListItemCodeArray();
+            int[] quantities = cart.getListItemQuantityArray();
+            int index = -1;
+            for (int i = 0; i < itemCodes.length; i++) {
+                if (itemCodes[i].equals(itemCode)) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index != -1) {
+                Item item = itemRepository.findByItemCode(itemCode).orElse(null);
+                if (item != null) {
+                    int oldQuantity = quantities[index];
+                    quantities[index] = quantity;
+                    cart.setTotalPrice(cart.getTotalPrice() + (quantity - oldQuantity) * item.getCurrentPrice());
+                }
+                cart.setListItemQuantityArray(quantities);
+                shoppingCartRepository.save(cart);
+            }
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeAnItemFromCart(String userCode, String itemCode) throws IOException {
+        ShoppingCart cart = shoppingCartRepository.findByUserCodeAndIsDeletedFalse(userCode).orElse(null);
+        if (cart != null) {
+            String[] itemCodes = cart.getListItemCodeArray();
+            int[] quantities = cart.getListItemQuantityArray();
+            int index = -1;
+            for (int i = 0; i < itemCodes.length; i++) {
+                if (itemCodes[i].equals(itemCode)) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index != -1) {
+                Item item = itemRepository.findByItemCode(itemCode).orElse(null);
+                if (item != null) {
+                    cart.setTotalPrice(cart.getTotalPrice() - quantities[index] * item.getCurrentPrice());
+                }
+                String[] newItemCodes = new String[itemCodes.length - 1];
+                int[] newQuantities = new int[quantities.length - 1];
+                System.arraycopy(itemCodes, 0, newItemCodes, 0, index);
+                System.arraycopy(itemCodes, index + 1, newItemCodes, index, itemCodes.length - index - 1);
+                System.arraycopy(quantities, 0, newQuantities, 0, index);
+                System.arraycopy(quantities, index + 1, newQuantities, index, quantities.length - index - 1);
+                cart.setListItemCodeArray(newItemCodes);
+                cart.setListItemQuantityArray(newQuantities);
+                shoppingCartRepository.save(cart);
+            }
+        }
+    }
 }
